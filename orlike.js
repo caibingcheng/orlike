@@ -22,9 +22,10 @@ function getCookie(cname) {
     }
     return "";
 }
-function OrLike({ serverUrl = "", el="" }) {
+function OrLike({ serverUrl = "", el = "" }) {
     $(el).html(htm_ele);
     this.serverUrl = serverUrl;
+    this.ckid = "";
     this.init();
     $('.likeit').click({ obj: this }, this.like);
     $('.dislikeit').click({ obj: this }, this.dislike);
@@ -38,9 +39,15 @@ OrLike.prototype.init = function () {
         dataType: 'jsonp',
         jsonp: "callback",
         jsonpCallback: "success",
+        xhrFields: {
+            withCredentials: true
+        },
+        async: false,
+        crossDomain: true,
         success: function (data) {
             if (data.stat == 'ok') {
-                if (getCookie(data.ckid)) {
+                obj.ckid = data.ckid;
+                if (!getCookie(data.ckid)) {
                     setCookie(data.ckid, data.uid, 30);
                 }
                 obj.query();
@@ -59,6 +66,10 @@ OrLike.prototype.query = function () {
         dataType: 'jsonp',
         jsonp: "callback",
         jsonpCallback: "success",
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
         success: function (data) {
             if (data.stat == 'ok') {
                 $('.likeit i span').text(data['like']);
@@ -70,31 +81,29 @@ OrLike.prototype.query = function () {
         },
     });
 }
-OrLike.prototype.like = function (event) {
-    obj = event.data.obj;
+OrLike.prototype.orl = function (obj, method) {
     server_url = obj.serverUrl;
+    req_url = server_url + '/orl?method=' + method + '&link=' + window.location.pathname + '&' + obj.ckid + '=' + getCookie(obj.ckid);
     $.ajax({
         type: 'GET',
-        url: server_url + '/orl?method=like&link=' + window.location.pathname,
+        url: req_url,
         dataType: 'jsonp',
         jsonp: "callback",
         jsonpCallback: "success",
-        success: function () {
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
+        success: function (data) {
             obj.query();
         },
     });
 }
+OrLike.prototype.like = function (event) {
+    obj = event.data.obj;
+    obj.orl(obj, 'like');
+}
 OrLike.prototype.dislike = function (event) {
     obj = event.data.obj;
-    server_url = obj.serverUrl;
-    $.ajax({
-        type: 'GET',
-        url: server_url + '/orl?method=dislike&link=' + window.location.pathname,
-        dataType: 'jsonp',
-        jsonp: "callback",
-        jsonpCallback: "success",
-        success: function () {
-            obj.query();
-        },
-    });
+    obj.orl(obj, 'dislike');
 }

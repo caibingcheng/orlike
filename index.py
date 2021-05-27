@@ -27,7 +27,7 @@ def orl():
     if (method != 'like' and method != 'dislike'):
         return func + "(" + json.dumps({'stat': 'failed'}) + ")"
     link = request.args.get('link')
-    uid = request.cookies.get(CKID)
+    uid = request.args.get(CKID)
 
     query = OrLike.query
     query.equal_to('method', method)
@@ -39,7 +39,7 @@ def orl():
         orlike.set('link', link)
         orlike.set('uid', uid)
         orlike.save()
-    return func + "(" + json.dumps({'stat': 'ok'}) + ")"
+    return func + "(" + json.dumps({'stat': 'ok', 'uid': uid}) + ")"
 
 
 @app.route('/qry', methods=["GET"])
