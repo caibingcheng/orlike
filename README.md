@@ -1,7 +1,7 @@
 # OrLike
 
 ![GitHub](https://img.shields.io/github/license/caibingcheng/orlike)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/caibingcheng/orlike)
+![GitHub release (latest by date)](https://img.shields.io/github/release/caibingcheng/orlike)
 
 使用LeanCloud, 部署在vercel的博客点赞插件.
 
