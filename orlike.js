@@ -6,7 +6,6 @@ const htm_ele = '' +
     '<i class="fa fa-thumbs-down" aria-hidden="true"><span>0</span></i>' +
     '</a>' +
     '';
-$(".orlike-box").html(htm_ele);
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -23,7 +22,8 @@ function getCookie(cname) {
     }
     return "";
 }
-function OrLike({ serverUrl = "" }) {
+function OrLike({ serverUrl = "", el="" }) {
+    $(el).html(htm_ele);
     this.serverUrl = serverUrl;
     this.init();
     $('.likeit').click({ obj: this }, this.like);
