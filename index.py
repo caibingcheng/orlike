@@ -4,6 +4,7 @@ import leancloud
 import hashlib
 import time
 import json
+import os
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -15,7 +16,7 @@ m = hashlib.md5()
 m.update((LCID + LCKEY).encode())
 CKID = m.hexdigest() + "_usrid"
 
-leancloud.init("hQFfnAHKAPnHTsmX3TOdHF8w-MdYXbMMI", "GKFTEbIuDSQezoogEXDjsUGv")
+leancloud.init(os.environ['APPID'], os.environ['APPKEY'])
 OrLike = leancloud.Object.extend('OrLike')
 
 
