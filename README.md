@@ -42,7 +42,7 @@
 
 到此为止, 本地工作已经做完了, 现在需要创建LeanCloud账户, 可以参考[Valine](https://valine.js.org/quickstart.html)的配置方法.
 
-拿到了LeanCloud的```APP ID``` 和 ```APP Key```之后, 需要填入到Vercel的环境变量.
+创建账户并且新建应用之后， 需要**给应用添加一个名为```OrLike```的class**, 然后再拿到LeanCloud的```APP ID``` 和 ```APP Key```填入到Vercel的环境变量.
 
 - ```APPID``` 对应 ```APP ID```
 - ```APPKEY``` 对应 ```APP Key```
