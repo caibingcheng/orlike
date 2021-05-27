@@ -19,7 +19,10 @@
 <script src="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@master/orlike.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@master/orlike.css">
 ```
-当然, 也可以使用自己的CDN.
+当然, 也可以使用自己的CDN. 本项目也依赖JQuery, 所以别忘记引用JQuery:
+```JavaScript
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+```
 
 接下来, 在你期望嵌入```OrLike```的位置加上一个```div```标签, 并且加上```class```或者```id```:
 ```HTML
