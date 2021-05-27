@@ -7,8 +7,9 @@ const htm_ele = '' +
     '</a>' +
     '</div>' +
     '';
-
-document.getElementsByClassName('orlike-box')[0].innerHTML = htm_ele;
+window.onload = function () {
+    document.getElementsByClassName('orlike-box')[0].innerHTML = htm_ele;
+}
 
 function OrLike({ serverUrl = "" }) {
     this.serverUrl = serverUrl;

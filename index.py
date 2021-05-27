@@ -1,7 +1,11 @@
 from flask import Flask, request, make_response, jsonify
+from flask_cors import CORS
 import leancloud
 import hashlib
 import time
+
+app = Flask(__name__)
+CORS(app, resources=r'/*')
 
 LCID = ""
 LCKEY = ""
@@ -10,7 +14,6 @@ m = hashlib.md5()
 m.update((LCID + LCKEY).encode())
 CKID = m.hexdigest() + "_usrid"
 
-app = Flask(__name__)
 leancloud.init("hQFfnAHKAPnHTsmX3TOdHF8w-MdYXbMMI", "GKFTEbIuDSQezoogEXDjsUGv")
 OrLike = leancloud.Object.extend('OrLike')
 
