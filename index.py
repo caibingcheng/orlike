@@ -3,9 +3,10 @@ from flask_cors import CORS
 import leancloud
 import hashlib
 import time
+import json
 
 app = Flask(__name__)
-CORS(app, resources=r'/*')
+CORS(app, supports_credentials=True)
 
 LCID = ""
 LCKEY = ""
@@ -21,8 +22,9 @@ OrLike = leancloud.Object.extend('OrLike')
 @app.route('/orl', methods=["GET"])
 def orl():
     method = request.args.get('method')
+    func = request.args.get('callback')
     if (method != 'like' and method != 'dislike'):
-        return make_response("failed")
+        return func + "(" + json.dumps({'stat': 'failed'}) + ")"
     link = request.args.get('link')
     uid = request.cookies.get(CKID)
 
@@ -36,7 +38,7 @@ def orl():
         orlike.set('link', link)
         orlike.set('uid', uid)
         orlike.save()
-    return make_response("success")
+    return func + "(" + json.dumps({'stat': 'ok'}) + ")"
 
 
 @app.route('/qry', methods=["GET"])
@@ -49,15 +51,18 @@ def qry():
     query.equal_to('method', "dislike")
     query.equal_to('link', link)
     cnt_dislike = query.count()
-    return make_response(jsonify({'like': cnt_like, 'dislike': cnt_dislike}))
+    response = {'stat': 'ok', 'like': cnt_like, 'dislike': cnt_dislike}
+    func = request.args.get('callback')
+    return func + "(" + json.dumps(response) + ")"
 
 
 @app.route('/ckusr', methods=["GET"])
 def ckusr():
-    response = make_response("success")
+    response = {'stat': 'ok', 'ckid': CKID}
     if request.cookies.get(CKID) == None:
         td = str(time.time())
         m = hashlib.md5()
         m.update((td + request.remote_addr).encode())
-        response.set_cookie(CKID, m.hexdigest(), max_age=(60*60*24*30))
-    return response
+        response['uid'] = m.hexdigest()
+    func = request.args.get('callback')
+    return func + "(" + json.dumps(response) + ")"
