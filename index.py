@@ -9,14 +9,14 @@ import os
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-LCID = ""
-LCKEY = ""
+LCID = os.environ['APPID']
+LCKEY = os.environ['APPKEY']
 
 m = hashlib.md5()
 m.update((LCID + LCKEY).encode())
 CKID = m.hexdigest() + "_usrid"
 
-leancloud.init(os.environ['APPID'], os.environ['APPKEY'])
+leancloud.init(LCID, LCKEY)
 OrLike = leancloud.Object.extend('OrLike')
 
 
@@ -33,6 +33,7 @@ def orl():
     query.equal_to('method', method)
     query.equal_to('link', link)
     query.equal_to('uid', uid)
+    print(method, link, uid)
     if not query.find():
         orlike = OrLike()
         orlike.set('method', method)
@@ -60,10 +61,9 @@ def qry():
 @app.route('/ckusr', methods=["GET"])
 def ckusr():
     response = {'stat': 'ok', 'ckid': CKID}
-    if request.cookies.get(CKID) == None:
-        td = str(time.time())
-        m = hashlib.md5()
-        m.update((td + request.remote_addr).encode())
-        response['uid'] = m.hexdigest()
+    td = str(time.time())
+    m = hashlib.md5()
+    m.update((td + request.remote_addr).encode())
+    response['uid'] = m.hexdigest()
     func = request.args.get('callback')
     return func + "(" + json.dumps(response) + ")"
