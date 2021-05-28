@@ -1,12 +1,3 @@
-const htm_ele = '' +
-    '<a class="likeit orlike" href="javascript:void(0)">' +
-    '<i class="fa fa-thumbs-up" aria-hidden="true"><span>0</span></i>' +
-    '</a>' +
-    '<a class="dislikeit orlike" href="javascript:void(0)">' +
-    '<i class="fa fa-thumbs-down" aria-hidden="true"><span>0</span></i>' +
-    '</a>' +
-    '';
-
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -22,18 +13,37 @@ function getCookie(cname) {
     }
     return "";
 }
-function OrLike({ serverUrl = "", el = "" }) {
-    this.gtmp();
-    $(el).html(htm_ele);
+function OrLike({ serverUrl = "", el = "", days = 30 }) {
     this.serverUrl = serverUrl;
+    this.el = el;
+    this.days = days;
     this.ckid = "";
     this.init();
-    $('.likeit').click({ obj: this }, this.like);
-    $('.dislikeit').click({ obj: this }, this.dislike);
 }
-OrLike.prototype.init = function () {
+OrLike.prototype.init = function() {
     server_url = this.serverUrl;
     obj = this;
+    $.ajax({
+        type: 'GET',
+        url: server_url + '/tmp',
+        dataType: 'jsonp',
+        jsonp: "callback",
+        jsonpCallback: "success",
+        xhrFields: {
+            withCredentials: true
+        },
+        async: true,
+        crossDomain: true,
+        success: function (data) {
+            $(obj.el).html(data.template);
+            obj.ckusr(obj);
+            $('.likeit').click({ obj: obj }, obj.like);
+            $('.dislikeit').click({ obj: obj }, obj.dislike);
+        },
+    });
+}
+OrLike.prototype.ckusr = function (obj) {
+    server_url = this.serverUrl;
     $.ajax({
         type: 'GET',
         url: server_url + '/ckusr',
@@ -49,31 +59,13 @@ OrLike.prototype.init = function () {
             if (data.stat == 'ok') {
                 obj.ckid = data.ckid;
                 if (!getCookie(data.ckid)) {
-                    setCookie(data.ckid, data.uid, 30);
+                    setCookie(data.ckid, data.uid, obj.days);
                 }
                 obj.query();
             }
             else {
                 console.error('connect orlike failed!!!');
             }
-        },
-    });
-}
-OrLike.prototype.gtmp = function() {
-    server_url = this.serverUrl;
-    $.ajax({
-        type: 'GET',
-        url: server_url + '/tmp',
-        dataType: 'jsonp',
-        jsonp: "callback",
-        jsonpCallback: "success",
-        xhrFields: {
-            withCredentials: true
-        },
-        crossDomain: true,
-        async: false,
-        success: function (data) {
-            console.log(data)
         },
     });
 }
