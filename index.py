@@ -21,16 +21,12 @@ OrLike = leancloud.Object.extend('OrLike')
 
 @app.route('/', methods=["GET"])
 def style():
-    return render_template("orlike.html")
-
-@app.route('/test', methods=["GET"])
-def test():
-    return render_template("test.html")
+    return render_template("test.html", server="/")
 
 @app.route('/tmp', methods=["GET"])
 def sdtmp():
     func = request.args.get('callback')
-    return func + "(" + send_from_directory("./templates", "orlike.html") + ")"
+    return func + "(" + json.dumps({'stat':'ok', 'template': render_template("orlike.html")}) + ")"
 
 @app.route('/orl', methods=["GET"])
 def orl():
@@ -79,3 +75,6 @@ def ckusr():
     response['uid'] = m.hexdigest()
     func = request.args.get('callback')
     return func + "(" + json.dumps(response) + ")"
+
+if __name__ == "__main__":
+    app.run()

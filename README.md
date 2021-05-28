@@ -17,7 +17,6 @@
 在你期望嵌入```OrLike```的页面加入以下链接:
 ```JavaScript
 <script src="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@master/orlike.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@master/orlike.css">
 ```
 当然, 也可以使用自己的CDN. 本项目也依赖JQuery, 所以别忘记引用JQuery:
 ```JavaScript
@@ -36,9 +35,10 @@
 </script>
 ```
 
-目前初始化需要两个参数
+目前初始化需要的参数:
 - ```serverUrl```: Vercel服务地址
 - ```el```: 放```orlike```的```div```名字(```class```或```id```)
+- ```days```: 用户id保存的时间, 默认是30天
 
 到此为止, 本地工作已经做完了, 现在需要创建LeanCloud账户, 可以参考[Valine](https://valine.js.org/quickstart.html)的配置方法.
 
