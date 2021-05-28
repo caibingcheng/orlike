@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, render_template, send_from_directory, jsonify
 from flask_cors import CORS
 import leancloud
 import hashlib
@@ -19,6 +19,14 @@ CKID = m.hexdigest() + "_usrid"
 leancloud.init(LCID, LCKEY)
 OrLike = leancloud.Object.extend('OrLike')
 
+@app.route('/', methods=["GET"])
+def style():
+    return render_template("test.html", server="/")
+
+@app.route('/tmp', methods=["GET"])
+def sdtmp():
+    func = request.args.get('callback')
+    return func + "(" + json.dumps({'stat':'ok', 'template': render_template("orlike.html")}) + ")"
 
 @app.route('/orl', methods=["GET"])
 def orl():
@@ -67,3 +75,6 @@ def ckusr():
     response['uid'] = m.hexdigest()
     func = request.args.get('callback')
     return func + "(" + json.dumps(response) + ")"
+
+if __name__ == "__main__":
+    app.run()
