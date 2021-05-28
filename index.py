@@ -21,7 +21,7 @@ OrLike = leancloud.Object.extend('OrLike')
 
 @app.route('/', methods=["GET"])
 def style():
-    return render_template("test.html", server="/")
+    return render_template("test.html", server="")
 
 @app.route('/tmp', methods=["GET"])
 def sdtmp():

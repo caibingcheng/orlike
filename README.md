@@ -3,7 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/caibingcheng/orlike)
 ![GitHub release (latest by date)](https://img.shields.io/github/release/caibingcheng/orlike)
 
-使用LeanCloud, 部署在vercel的博客点赞插件.
+使用LeanCloud, 部署在vercel的博客点赞插件, 保障安全.
 
 # Deployment
 
