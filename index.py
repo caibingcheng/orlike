@@ -42,12 +42,15 @@ def orl():
     query.equal_to('link', link)
     query.equal_to('uid', uid)
     print(method, link, uid)
-    if not query.find():
+    exist = query.find()
+    if not exist:
         orlike = OrLike()
         orlike.set('method', method)
         orlike.set('link', link)
         orlike.set('uid', uid)
         orlike.save()
+    else:
+        [e.destroy() for e in exist]
     return func + "(" + json.dumps({'stat': 'ok', 'uid': uid}) + ")"
 
 
