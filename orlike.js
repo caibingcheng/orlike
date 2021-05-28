@@ -23,6 +23,7 @@ function getCookie(cname) {
     return "";
 }
 function OrLike({ serverUrl = "", el = "" }) {
+    this.gtmp();
     $(el).html(htm_ele);
     this.serverUrl = serverUrl;
     this.ckid = "";
@@ -55,6 +56,24 @@ OrLike.prototype.init = function () {
             else {
                 console.error('connect orlike failed!!!');
             }
+        },
+    });
+}
+OrLike.prototype.gtmp = function() {
+    server_url = this.serverUrl;
+    $.ajax({
+        type: 'GET',
+        url: server_url + '/tmp',
+        dataType: 'jsonp',
+        jsonp: "callback",
+        jsonpCallback: "success",
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
+        async: false,
+        success: function (data) {
+            console.log(data)
         },
     });
 }
