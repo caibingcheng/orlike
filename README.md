@@ -1,9 +1,19 @@
 # OrLike
 
 ![GitHub](https://img.shields.io/github/license/caibingcheng/orlike)
-![GitHub release (latest by date)](https://img.shields.io/github/release/caibingcheng/orlike)
+![GitHub branch checks state](https://img.shields.io/github/checks-status/caibingcheng/orlike/master)
+![GitHub Release Date](https://img.shields.io/github/release-date/caibingcheng/orlike)
+![GitHub language count](https://img.shields.io/github/languages/count/caibingcheng/orlike)
+![GitHub top language](https://img.shields.io/github/languages/top/caibingcheng/orlike)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/caibingcheng/orlike)
 
 使用LeanCloud, 部署在vercel的博客点赞插件, 保障安全.
+
+当前功能:
+- [x] 分离APPID/APPKEY, 保护账号安全
+- [x] 使用随机用户ID, 不保存用户其他信息, 保障用户隐私
+- [x] 支持设置用户过期时间
+- [x] 支持取消点赞/踩
 
 # Deployment
 
@@ -42,7 +52,7 @@
 
 到此为止, 本地工作已经做完了, 现在需要创建LeanCloud账户, 可以参考[Valine](https://valine.js.org/quickstart.html)的配置方法.
 
-创建账户并且新建应用之后， 需要**给应用添加一个名为```OrLike```的class**, 然后再拿到LeanCloud的```APP ID``` 和 ```APP Key```填入到Vercel的环境变量.
+创建账户并且新建应用之后， 需要**给应用添加一个名为```OrLike```的class**, 并且设置**读写权限为所有用户**, 然后再拿到LeanCloud的```APP ID``` 和 ```APP Key```填入到Vercel的环境变量.
 
 - ```APPID``` 对应 ```APP ID```
 - ```APPKEY``` 对应 ```APP Key```
@@ -51,3 +61,6 @@
 
 # Todo & Contributes
 项目初期, 还有很多想象空间, 加油↖(^ω^)↗
+
+- [ ] 将orlike发布为pipy包, 方便自动升级
+- [ ] 提供点赞/踩排名
