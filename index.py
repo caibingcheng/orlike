@@ -10,8 +10,14 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-LCID = os.environ["APPID"]
-LCKEY = os.environ["APPKEY"]
+LCID = os.environ.get("APPID", default=None)
+LCKEY = os.environ.get("APPKEY", default=None)
+
+if not (LCID and LCKEY):
+    raise RuntimeError(
+        "You should set environment variables `APPID` and `APPKEY` first! "
+        "Please read README of repo."
+    )
 
 m = hashlib.md5()
 m.update((LCID + LCKEY).encode())
