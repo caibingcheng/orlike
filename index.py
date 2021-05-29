@@ -35,6 +35,7 @@ def style():
 @app.route("/tmp", methods=["GET"])
 def sdtmp():
     func = request.args.get("callback")
+
     return (
         func
         + "("
@@ -49,6 +50,7 @@ def orl():
     func = request.args.get("callback")
     if method != "like" and method != "dislike":
         return func + "(" + json.dumps({"stat": "failed"}) + ")"
+
     link = request.args.get("link")
     uid = request.args.get(CKID)
 
@@ -66,6 +68,7 @@ def orl():
         orlike.save()
     else:
         [e.destroy() for e in exist]
+
     return func + "(" + json.dumps({"stat": "ok", "uid": uid}) + ")"
 
 
@@ -81,6 +84,7 @@ def qry():
     cnt_dislike = query.count()
     response = {"stat": "ok", "like": cnt_like, "dislike": cnt_dislike}
     func = request.args.get("callback")
+
     return func + "(" + json.dumps(response) + ")"
 
 
@@ -92,6 +96,7 @@ def ckusr():
     m.update((td + request.remote_addr).encode())
     response["uid"] = m.hexdigest()
     func = request.args.get("callback")
+
     return func + "(" + json.dumps(response) + ")"
 
 
