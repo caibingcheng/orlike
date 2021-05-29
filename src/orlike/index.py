@@ -98,8 +98,3 @@ def ckusr():
     func = request.args.get("callback")
 
     return func + "(" + json.dumps(response) + ")"
-
-
-if __name__ == "__main__":
-
-    app.run()
