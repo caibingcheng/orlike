@@ -6,6 +6,7 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/caibingcheng/orlike)
 ![GitHub top language](https://img.shields.io/github/languages/top/caibingcheng/orlike)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/caibingcheng/orlike)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/orlike)
 
 使用LeanCloud, 部署在vercel的博客点赞插件, 保障安全.
 
@@ -20,8 +21,9 @@
 
 在这里可以将OrLike部署到你的Vercel账户上.
 
-[![Deploy to Vercel](https://camo.githubusercontent.com/f209ca5cc3af7dd930b6bfc55b3d7b6a5fde1aff/68747470733a2f2f76657263656c2e636f6d2f627574746f6e)](https://vercel.com/import/project?template=https://github.com/caibingcheng/orlike)
+[![Deploy to Vercel](https://camo.githubusercontent.com/f209ca5cc3af7dd930b6bfc55b3d7b6a5fde1aff/68747470733a2f2f76657263656c2e636f6d2f627574746f6e)](https://vercel.com/import/project?template=https://github.com/caibingcheng/orlike-vercel)
 
+我们更推荐使用这个[**零配置的例子**](https://github.com/caibingcheng/orlike-vercel).
 
 # Usage
 
@@ -42,7 +44,11 @@
 然后在合适的地方初始化```OrLike```:
 ```HTML
 <script>
-    new OrLike({ serverUrl: "http://orlike-caibingcheng.vercel.app/", el: ".orlike-box" });
+    new OrLike({
+        serverUrl: "https://orlike-vercel.vercel.app/",
+        el: ".orlike-box",
+        days: 30,
+    });
 </script>
 ```
 
