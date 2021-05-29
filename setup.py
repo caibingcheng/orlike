@@ -21,7 +21,7 @@ install_requires = [
     "flask-cors",
 ]
 
-version = "0.0.1"
+version = "0.1.2"
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.

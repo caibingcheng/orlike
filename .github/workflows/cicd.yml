@@ -4,11 +4,6 @@
 name: Upload Python Package orlike
 
 on:
-  # test
-  push:
-    branches:
-      - master
-
   release:
     types: [created]
 
