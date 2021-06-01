@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orlike</title>
+</head>
+<body>
+    <div class="orlike-box"></div>
+</body>
+<script src="./orlike.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    new OrLike({
+        serverUrl: "https://orlike-vercel-caibingcheng.vercel.app/",
+        el: ".orlike-box",
+        days: 30,
+        icon: {like: "fa fa-heart", dislike: false}
+    });
+</script>
+</html>
