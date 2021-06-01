@@ -5,23 +5,40 @@ https://github.com/pypa/sampleproject
 """
 
 import pathlib
+import re
 
 # Always prefer setuptools over distutils
 from setuptools import find_packages, setup
 
 here = pathlib.Path(__file__).parent.resolve()
+version_contents = (here / "src/orlike/__version__.py").read_text(encoding="utf-8")
+version_str = re.findall(r"\d+.\d+.\d+", version_contents)
+
+if len(version_str) != 1:
+    raise RuntimeError("invalid version ! check contents of __version__.py")
+
+version = str(version_str[0]).strip()
+
+print("build version: ", version)
 
 # Get the long description from the README file
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
-# Install requirments
+# Install requirements
 install_requires = [
     "Flask>=1.1.2",
     "leancloud>=2.9.3",
     "flask-cors",
 ]
 
-version = "0.1.2"
+extras_require = {
+    "dev": [
+        "pytest==6.2.2",
+        "pytest-cov==2.11.1",
+        "tox~=3.21.0",
+    ]
+}
+
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -146,7 +163,7 @@ setup(
     #
     # Similar to `install_requires` above, these must be valid existing
     # projects.
-    extras_require={},  # Optional
+    extras_require=extras_require,  # Optional
     include_package_data=True,
     # List additional URLs that are relevant to your project as a dict.
     #
