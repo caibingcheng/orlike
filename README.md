@@ -29,7 +29,7 @@
 
 在你期望嵌入```OrLike```的页面加入以下链接:
 ```JavaScript
-<script src="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@master/orlike.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.js"></script>
 ```
 当然, 也可以使用自己的CDN. 本项目也依赖JQuery, 所以别忘记引用JQuery:
 ```JavaScript
