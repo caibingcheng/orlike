@@ -1,0 +1,14 @@
+name: Upload Client orlike
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clean jsdlivr cache
+        run: |
+            curl https://purge.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.js
+            curl https://purge.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.css

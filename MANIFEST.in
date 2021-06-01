@@ -1,3 +1,0 @@
-include LICENSE
-graft src/orlike/templates
-global-exclude *.pyc
