@@ -1,4 +1,4 @@
-const version = "V0.1.31"
+const version = "V0.1.31";
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -15,16 +15,43 @@ function getCookie(cname) {
     }
     return "";
 }
-function OrLike({ serverUrl = "",
-                  el = "",
-                  days = 30,
-                  icon = { like: "fa fa-thumbs-up", dislike: "fa fa-thumbs-down" } }) {
+
+function createLink(url) {
+    let link = $(document.createElement('link'));
+    link.attr('href', url);
+    link.attr('rel', 'stylesheet');
+    link.attr('type', 'text/css');
+    $('head').prepend(link);
+}
+
+function OrLike(
+    {
+        serverUrl = "",
+        el = "",
+        days = 30,
+        style = "https://cdn.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.min.css",
+        ifont = "https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css",
+        icon = { like: "fa fa-thumbs-up", dislike: "fa fa-thumbs-down" },
+    } = {}
+) {
     this.serverUrl = serverUrl;
     this.el = el;
+    this.style = style;
+    this.ifont = ifont;
     this.days = days;
     this.icon = icon;
     this.ckid = "";
+    this.prepare();
     this.init();
+}
+OrLike.prototype.prepare = function () {
+    $(this.el).addClass("orlike-loading");
+    if (this.style != "") {
+        createLink(this.style);
+    }
+    if (this.ifont != "") {
+        createLink(this.ifont);
+    }
 }
 OrLike.prototype.init = function () {
     server_url = this.serverUrl;
@@ -42,6 +69,7 @@ OrLike.prototype.init = function () {
         crossDomain: true,
         success: function (data) {
             let template = $(data.template);
+
             let icon_like = template.siblings("a.likeit.orlike").children("i");
             let icon_dislike = template.siblings("a.dislikeit.orlike").children("i");
             icon_like.attr('class', obj.icon.like);
@@ -50,6 +78,8 @@ OrLike.prototype.init = function () {
                 icon_like.remove();
             if (obj.icon.dislike == false)
                 icon_dislike.remove();
+
+            $(obj.el).removeClass("orlike-loading");
             $(obj.el).html(template);
             obj.ckusr(obj);
             $('a.likeit.orlike').click({ obj: obj }, obj.like);
@@ -71,8 +101,7 @@ OrLike.prototype.ckusr = function (obj) {
         async: false,
         crossDomain: true,
         success: function (data) {
-            console.log(data)
-            if (data.stat == 'ok') {
+            if (data.stat == 'ok' && data.uid != "") {
                 obj.ckid = data.ckid;
                 if (!getCookie(data.ckid)) {
                     setCookie(data.ckid, data.uid, obj.days);

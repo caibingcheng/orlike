@@ -8,14 +8,21 @@
 <body>
     <div class="orlike-box"></div>
 </body>
-<script src="./orlike.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="./orlike.min.js"></script>
 <script>
+    for (let i = 0; i < 50; i++)
+    {
+        let p = document.createElement("p");
+        $(p).text("test line " + i);
+        $(".orlike-box").before(p);
+    }
     new OrLike({
-        serverUrl: "https://orlike-vercel-caibingcheng.vercel.app/",
+        serverUrl: "https://orlike-caibingcheng.vercel.app/",
         el: ".orlike-box",
         days: 30,
-        icon: {like: "fa fa-heart", dislike: false}
+        icon: {like: "fa fa-heart", dislike: false},
+        style: "./orlike.min.css",
     });
 </script>
 </html>
