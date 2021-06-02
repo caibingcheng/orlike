@@ -1,3 +1,5 @@
+const version = "V0.1.33";
+
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -13,14 +15,45 @@ function getCookie(cname) {
     }
     return "";
 }
-function OrLike({ serverUrl = "", el = "", days = 30 }) {
+
+function createLink(url) {
+    let link = $(document.createElement('link'));
+    link.attr('href', url);
+    link.attr('rel', 'stylesheet');
+    link.attr('type', 'text/css');
+    $('head').prepend(link);
+}
+
+function OrLike(
+    {
+        serverUrl = "",
+        el = "",
+        days = 30,
+        style = "https://cdn.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.min.css",
+        ifont = "https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css",
+        icon = { like: "fa fa-thumbs-up", dislike: "fa fa-thumbs-down" },
+    } = {}
+) {
     this.serverUrl = serverUrl;
     this.el = el;
+    this.style = style;
+    this.ifont = ifont;
     this.days = days;
+    this.icon = icon;
     this.ckid = "";
+    this.prepare();
     this.init();
 }
-OrLike.prototype.init = function() {
+OrLike.prototype.prepare = function () {
+    $(this.el).addClass("orlike-loading");
+    if (this.style != "") {
+        createLink(this.style);
+    }
+    if (this.ifont != "") {
+        createLink(this.ifont);
+    }
+}
+OrLike.prototype.init = function () {
     server_url = this.serverUrl;
     obj = this;
     $.ajax({
@@ -35,10 +68,22 @@ OrLike.prototype.init = function() {
         async: true,
         crossDomain: true,
         success: function (data) {
-            $(obj.el).html(data.template);
+            let template = $(data.template);
+
+            let icon_like = template.siblings("a.likeit.orlike").children("i");
+            let icon_dislike = template.siblings("a.dislikeit.orlike").children("i");
+            icon_like.attr('class', obj.icon.like);
+            icon_dislike.attr('class', obj.icon.dislike);
+            if (obj.icon.like == false)
+                icon_like.remove();
+            if (obj.icon.dislike == false)
+                icon_dislike.remove();
+
+            $(obj.el).removeClass("orlike-loading");
+            $(obj.el).html(template);
             obj.ckusr(obj);
-            $('.likeit').click({ obj: obj }, obj.like);
-            $('.dislikeit').click({ obj: obj }, obj.dislike);
+            $('a.likeit.orlike').click({ obj: obj }, obj.like);
+            $('a.dislikeit.orlike').click({ obj: obj }, obj.dislike);
         },
     });
 }
@@ -56,7 +101,7 @@ OrLike.prototype.ckusr = function (obj) {
         async: false,
         crossDomain: true,
         success: function (data) {
-            if (data.stat == 'ok') {
+            if (data.stat == 'ok' && data.uid != "") {
                 obj.ckid = data.ckid;
                 if (!getCookie(data.ckid)) {
                     setCookie(data.ckid, data.uid, obj.days);
@@ -83,8 +128,8 @@ OrLike.prototype.query = function () {
         crossDomain: true,
         success: function (data) {
             if (data.stat == 'ok') {
-                $('.likeit i span').text(data['like']);
-                $('.dislikeit i span').text(data['dislike']);
+                $('a.likeit.orlike i span').text(data['like']);
+                $('a.dislikeit.orlike i span').text(data['dislike']);
             }
             else {
                 console.error('query orlike failed!!!');

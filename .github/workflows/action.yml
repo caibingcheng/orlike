@@ -12,3 +12,8 @@ jobs:
         run: |
             curl https://purge.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.js
             curl https://purge.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.css
+            curl https://purge.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.min.js
+            curl https://purge.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.min.css
+
+      - name: reDeploy demo pages
+        run: curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_zz7KiNcfKImvUHk4j4RLrBnRiIlO/QPGl3pURAL

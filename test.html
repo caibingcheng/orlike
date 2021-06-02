@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orlike</title>
+</head>
+<body>
+    <div class="orlike-box"></div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="./orlike.min.js"></script>
+<script>
+    for (let i = 0; i < 50; i++)
+    {
+        let p = document.createElement("p");
+        $(p).text("test line " + i);
+        $(".orlike-box").before(p);
+    }
+    new OrLike({
+        serverUrl: "https://orlike-caibingcheng.vercel.app/",
+        el: ".orlike-box",
+        days: 30,
+        icon: {like: "fa fa-heart", dislike: false},
+        style: "./orlike.min.css",
+    });
+</script>
+</html>
