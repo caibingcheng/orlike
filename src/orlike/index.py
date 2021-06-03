@@ -29,33 +29,33 @@ leancloud.init(LCID, LCKEY)
 OrLike = leancloud.Object.extend("OrLike")
 
 
-def add_version_to_response(response: dict) -> dict:
+def format_response(request: dict, response: dict, stat: str) -> dict:
+    func = request.args.get("callback")
     response["version"] = f"V{__version__}"
+    response["stat"] = f"{stat}"
 
-    return response
+    return func + "(" + json.dumps(response) + ")" if func \
+        else json.dumps(response)
 
 
 @app.route("/", methods=["GET"])
-def style():
+def demo():
     return render_template("test.html", server="")
 
 
 @app.route("/tmp", methods=["GET"])
 def sdtmp():
-    func = request.args.get("callback")
+    response = {"template": render_template("orlike.html")}
 
-    response = {"stat": "ok", "template": render_template("orlike.html")}
-    add_version_to_response(response)
-
-    return func + "(" + json.dumps(response) + ")"
+    return format_response(request, response, "ok")
 
 
 @app.route("/orl", methods=["GET"])
 def orl():
     method = request.args.get("method")
-    func = request.args.get("callback")
     if method != "like" and method != "dislike":
-        return func + "(" + json.dumps({"stat": "failed"}) + ")"
+        response = {"reason": "invalid method"}
+        return format_response(request, response, "failed")
 
     link = request.args.get("link")
     uid = request.args.get(CKID)
@@ -64,7 +64,6 @@ def orl():
     query.equal_to("method", method)
     query.equal_to("link", link)
     query.equal_to("uid", uid)
-    print(method, link, uid)
     exist = query.find()
     if not exist:
         orlike = OrLike()
@@ -75,10 +74,9 @@ def orl():
     else:
         [e.destroy() for e in exist]
 
-    response = {"stat": "ok", "uid": uid}
-    add_version_to_response(response)
+    response = {"uid": uid}
 
-    return func + "(" + json.dumps(response) + ")"
+    return format_response(request, response, "ok")
 
 
 @app.route("/qry", methods=["GET"])
@@ -92,12 +90,9 @@ def qry():
     query.equal_to("link", link)
     cnt_dislike = query.count()
 
-    func = request.args.get("callback")
+    response = {"like": cnt_like, "dislike": cnt_dislike}
 
-    response = {"stat": "ok", "like": cnt_like, "dislike": cnt_dislike}
-    add_version_to_response(response)
-
-    return func + "(" + json.dumps(response) + ")"
+    return format_response(request, response, "ok")
 
 
 @app.route("/ckusr", methods=["GET"])
@@ -107,9 +102,6 @@ def ckusr():
     m = hashlib.md5()
     m.update((td + request.remote_addr).encode())
 
-    func = request.args.get("callback")
-
     response["uid"] = m.hexdigest()
-    add_version_to_response(response)
 
-    return func + "(" + json.dumps(response) + ")"
+    return format_response(request, response, "ok")
