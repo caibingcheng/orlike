@@ -3,10 +3,6 @@
 ![GitHub](https://img.shields.io/github/license/caibingcheng/orlike)
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/caibingcheng/orlike/master)
 ![GitHub Release Date](https://img.shields.io/github/release-date/caibingcheng/orlike)
-![GitHub language count](https://img.shields.io/github/languages/count/caibingcheng/orlike)
-![GitHub top language](https://img.shields.io/github/languages/top/caibingcheng/orlike)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/caibingcheng/orlike)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/orlike)
 
 使用LeanCloud, 部署在vercel的博客点赞插件, 保障安全.
 
@@ -16,11 +12,14 @@
 - [x] 支持设置用户过期时间
 - [x] 支持取消点赞/踩
 - [x] 将orlike发布为pipy包, 方便自动升级
+- [x] 加载动画
+- [x] 自定义图标和CDN
 
 # Branch
 
 - server: server端代码
 - client: client端代码
+- master: demo
 
 # Deployment
 
@@ -34,7 +33,7 @@
 
 在你期望嵌入```OrLike```的页面加入以下链接:
 ```JavaScript
-<script src="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.min.js"></script>
 ```
 当然, 也可以使用自己的CDN. 本项目也依赖JQuery, 所以别忘记引用JQuery:
 ```JavaScript
@@ -50,17 +49,24 @@
 ```HTML
 <script>
     new OrLike({
-        serverUrl: "https://orlike-vercel.vercel.app/",
+        serverUrl: "https://orlike.vercel.app/",
         el: ".orlike-box",
         days: 30,
+        icon: {like: "fa fa-heart", dislike: false},
+        style: "https://cdn.jsdelivr.net/gh/caibingcheng/orlike@client/orlike.min.css",
     });
 </script>
 ```
 
+> 尽管可以使用公共的serverUrl, 但是更推荐使用私有的serverUrl, 这样更容易保证数据安全.
+
 目前初始化需要的参数:
-- ```serverUrl```: Vercel服务地址
-- ```el```: 放```orlike```的```div```名字(```class```或```id```)
-- ```days```: 用户id保存的时间, 默认是30天
+- ```serverUrl```: **必填**, Vercel服务地址
+- ```el```: **必填**, 放```orlike```的```div```名字(```class```或```id```)
+- ```days```: 可选, 用户id保存的时间, 默认是30天
+- ```icon```: 可选, 自定义点赞和踩的图标, 不填写这是默认, 如果是false, 则不显示对应的按扭
+- ```style```: 可选, 可自定义样式, 如果不填写, 则使用默认CDN
+- ```ifont```: 可选, 可自定义font-awesome CDN, 如果不填写, 则使用默认CDN
 
 到此为止, 本地工作已经做完了, 现在需要创建LeanCloud账户, 可以参考[Valine](https://valine.js.org/quickstart.html)的配置方法.
 
