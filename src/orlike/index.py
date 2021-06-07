@@ -33,9 +33,7 @@ def format_response(request: dict, response: dict, stat: str) -> dict:
     func = request.args.get("callback")
     response["version"] = f"V{__version__}"
     response["stat"] = f"{stat}"
-
-    return func + "(" + json.dumps(response) + ")" if func \
-        else json.dumps(response)
+    return f"{func}({json.dumps(response)})" if func else json.dumps(response)
 
 
 @app.route("/", methods=["GET"])
@@ -53,7 +51,7 @@ def sdtmp():
 @app.route("/orl", methods=["GET"])
 def orl():
     method = request.args.get("method")
-    if method != "like" and method != "dislike":
+    if method not in {"like", "dislike"}:
         response = {"reason": "invalid method"}
         return format_response(request, response, "failed")
 
