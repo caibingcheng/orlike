@@ -4,8 +4,9 @@ import os
 import time
 
 import leancloud
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 from flask_cors import CORS
+from functools import wraps
 
 from .__version__ import __version__
 
@@ -29,11 +30,41 @@ leancloud.init(LCID, LCKEY)
 OrLike = leancloud.Object.extend("OrLike")
 
 
-def format_response(request: dict, response: dict, stat: str) -> dict:
+@app.before_request
+def chk_args():
+    chk_table = {
+        "/": {},
+        "/tmp": {},
+        "/ckusr": {},
+        "/orl": {"method", "link", CKID},
+        "/qry": {"link"},
+    }
+
+    path = request.path
     func = request.args.get("callback")
-    response["version"] = f"V{__version__}"
-    response["stat"] = f"{stat}"
-    return f"{func}({json.dumps(response)})" if func else json.dumps(response)
+
+    # no args required
+    if path not in chk_table.keys():
+        response = {"stat": "failed", "message": "invalid url " + path}
+        return f"{func}({json.dumps(response)})" if func else json.dumps(response)
+
+    for rq in chk_table[path]:
+        if rq not in request.args:
+            response = {"stat": "failed", "message": "require " +
+                        str(chk_table[path]) + " but get " + json.dumps(request.args)}
+            return f"{func}({json.dumps(response)})" if func else json.dumps(response)
+
+
+def format_response(action_func):
+    @wraps(action_func)
+    def _format_response(*args, **kwargs):
+        response = action_func(*args, **kwargs)
+        func = request.args.get("callback")
+        response["version"] = f"V{__version__}"
+        if "stat" not in response.keys():
+            response["stat"] = "ok"
+        return f"{func}({json.dumps(response)})" if func else json.dumps(response)
+    return _format_response
 
 
 @app.route("/", methods=["GET"])
@@ -42,19 +73,17 @@ def demo():
 
 
 @app.route("/tmp", methods=["GET"])
+@format_response
 def sdtmp():
     response = {"template": render_template("orlike.html")}
 
-    return format_response(request, response, "ok")
+    return response
 
 
 @app.route("/orl", methods=["GET"])
+@format_response
 def orl():
     method = request.args.get("method")
-    if method not in {"like", "dislike"}:
-        response = {"reason": "invalid method"}
-        return format_response(request, response, "failed")
-
     link = request.args.get("link")
     uid = request.args.get(CKID)
 
@@ -74,10 +103,11 @@ def orl():
 
     response = {"uid": uid}
 
-    return format_response(request, response, "ok")
+    return response
 
 
 @app.route("/qry", methods=["GET"])
+@format_response
 def qry():
     link = request.args.get("link")
     query = OrLike.query
@@ -90,16 +120,17 @@ def qry():
 
     response = {"like": cnt_like, "dislike": cnt_dislike}
 
-    return format_response(request, response, "ok")
+    return response
 
 
 @app.route("/ckusr", methods=["GET"])
+@format_response
 def ckusr():
-    response = {"stat": "ok", "ckid": CKID}
+    response = {"ckid": CKID}
     td = str(time.time())
     m = hashlib.md5()
     m.update((td + request.remote_addr).encode())
 
     response["uid"] = m.hexdigest()
 
-    return format_response(request, response, "ok")
+    return response
