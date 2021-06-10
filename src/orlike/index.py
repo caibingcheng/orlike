@@ -4,7 +4,7 @@ import os
 import time
 
 import leancloud
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request
 from flask_cors import CORS
 from functools import wraps
 
@@ -28,6 +28,7 @@ CKID = m.hexdigest() + "_usrid"
 
 leancloud.init(LCID, LCKEY)
 OrLike = leancloud.Object.extend("OrLike")
+OLCounts = leancloud.Object.extend("OLCounts")
 
 
 @app.before_request
@@ -38,6 +39,7 @@ def chk_args():
         "/ckusr": {},
         "/orl": {"method", "link", CKID},
         "/qry": {"link"},
+        "/topk": {"method", "k"},
     }
 
     path = request.path
@@ -80,28 +82,82 @@ def sdtmp():
     return response
 
 
+def qry_cnt_from_orlike(link: str):
+    query = OrLike.query
+    query.equal_to("method", "like")
+    query.equal_to("link", link)
+    cnt_like = query.count()
+
+    query.equal_to("method", "dislike")
+    query.equal_to("link", link)
+    cnt_dislike = query.count()
+
+    return cnt_like, cnt_dislike
+
+
+def qry_cnt_from_olcounts(link: str):
+    cnt_like, cnt_dislike = 0, 0
+    query = OLCounts.query
+    query.equal_to("link", link)
+    cnt = None
+
+    # first有点问题, 没有会触发一个raise
+    try:
+        # 如果在olcounts里面没有找到, 那么就先从orlike更新olcounts
+        # 作为初始化
+        cnt = query.first()
+        cnt_like, cnt_dislike = cnt.get("like"), cnt.get("dislike")
+    except:
+        # 从orlike获取不同method的counts
+        cnt_like, cnt_dislike = qry_cnt_from_orlike(link)
+
+        if cnt_like > 0 or cnt_dislike > 0:
+            # 更新olcounts
+            olcounts = OLCounts()
+            olcounts.set("link", link)
+            olcounts.set("like", cnt_like)
+            olcounts.set("dislike", cnt_dislike)
+            olcounts.save()
+    return cnt, cnt_like, cnt_dislike
+
+
 @app.route("/orl", methods=["GET"])
 @format_response
 def orl():
     method = request.args.get("method")
     link = request.args.get("link")
     uid = request.args.get(CKID)
+    response = {"uid": uid}
 
     query = OrLike.query
     query.equal_to("method", method)
     query.equal_to("link", link)
     query.equal_to("uid", uid)
-    exist = query.find()
-    if not exist:
+
+    # first有点问题, 没有会触发一个raise
+    try:
+        # 如果这条数据存在, 则说明用户是二次点击, 则取消
+        # 如果不存在, 则用户是第一次点击, 允许
+        exist = query.first()
+        exist.destroy()
+    except:
         orlike = OrLike()
         orlike.set("method", method)
         orlike.set("link", link)
         orlike.set("uid", uid)
         orlike.save()
-    else:
-        [e.destroy() for e in exist]
 
-    response = {"uid": uid}
+    # orl请求也相当于会执行一个qry请求
+    # TODO: 能否减少请求次数
+    cnt, response["like"], response["dislike"] = qry_cnt_from_olcounts(link)
+    # 如果没有qry到, 则说明这是一条新数据, 下面就不需要更新了
+    if cnt:
+        inc = -1 if exist else 1
+        # 如果这条数据存在, 则说明用户是二次点击, 则取消
+        # 如果不存在, 则用户是第一次点击, 允许
+        cnt.increase(method, inc)
+        response[method] += inc
+        cnt.save()
 
     return response
 
@@ -110,14 +166,7 @@ def orl():
 @format_response
 def qry():
     link = request.args.get("link")
-    query = OrLike.query
-    query.equal_to("method", "like")
-    query.equal_to("link", link)
-    cnt_like = query.count()
-    query.equal_to("method", "dislike")
-    query.equal_to("link", link)
-    cnt_dislike = query.count()
-
+    cnt, cnt_like, cnt_dislike = qry_cnt_from_olcounts(link)
     response = {"like": cnt_like, "dislike": cnt_dislike}
 
     return response
@@ -132,5 +181,20 @@ def ckusr():
     m.update((td + request.remote_addr).encode())
 
     response["uid"] = m.hexdigest()
+
+    return response
+
+
+@app.route("/topk", methods=["GET"])
+@format_response
+def topk():
+    method = request.args.get("method")
+    k = request.args.get("k")
+    query = OLCounts.query
+    query.descending(method)
+    query.limit(int(k))
+    fq = query.find()
+
+    response = {"topk": [{"link": q.get("link"), "cnt": q.get(method)} for q in fq]}
 
     return response
