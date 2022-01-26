@@ -21,7 +21,7 @@ function createLink(url) {
     link.attr('href', url);
     link.attr('rel', 'stylesheet');
     link.attr('type', 'text/css');
-    $('head').prepend(link);
+    $('link').last().after(link);
 }
 
 function OrLike(
