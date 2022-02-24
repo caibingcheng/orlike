@@ -1,3 +1,4 @@
-Flask>=1.1.2
+Flask
 leancloud>=2.9.3
 flask-cors
+markupsafe==2.0.1
